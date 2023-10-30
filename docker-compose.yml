@@ -1,0 +1,23 @@
+version: '3'
+services:
+    java-srv:
+        build:
+            context: java-srv
+        depends_on:
+        - db
+        links:
+        - db:db
+        volumes:
+        - ./java-srv/log:/root/log
+        command: sh -c "/wait && gradle run"
+        environment:
+        - WAIT_HOSTS=db:3306
+        - WAIT_HOSTS_TIMEOUT=300
+        - WAIT_SLEEP_INTERVAL=30
+        - WAIT_HOST_CONNECT_TIMEOUT=30
+    db:
+        image: dolthub/dolt-sql-server
+        ports:
+        - 3306
+        volumes:
+        - ./db/sql:/docker-entrypoint-initdb.d
